@@ -2,7 +2,7 @@ import requests
 import socket
 import threading
 import logging
-import mraa
+import RPi.GPIO as GPIO
 
 # change this to the values from MCS web console
 DEVICE_INFO = {
@@ -54,7 +54,7 @@ def waitAndExecuteCommand(commandChannel):
 
         if len(fields) > 1:
             timeStamp, dataChannelId, commandString = fields
-            if dataChannelId == 'LED_Control':
+            if dataChannelId == 'LEDControl':
                 # check the value - it's either 0 or 1
                 commandValue = int(commandString)
                 logging.info("led :%d" % commandValue)
@@ -64,16 +64,16 @@ pin = None
 def setupLED():
     global pin
     # on LinkIt Smart 7699, pin 44 is the Wi-Fi LED.
-    pin = mraa.Gpio(44)
-    pin.dir(mraa.DIR_OUT)
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(4, GPIO.OUT)
 
 def setLED(state):
     # Note the LED is "reversed" to the pin's GPIO status.
     # So we reverse it here.
     if state:
-        pin.write(0)
+        GPIO.output(4,1)
     else:
-        pin.write(1)
+        GPIO.output(4,0)
 
 if __name__ == '__main__':
     setupLED()
